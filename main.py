@@ -1,4 +1,4 @@
-import readline
+# import readline
 
 # CCurrently in a CLI mock up phase of how I want this to look, will convert this all to gui next
 TO_DO_LIST: list = []
@@ -9,7 +9,7 @@ def get_commands() -> None:
     print('add - adds a new task to your to-do list')
     print('delete - deletes a task from your to-do list')
     print('edit - edit the contents of a task')
-
+    print('close - exits the program')
 
 def add_task() -> None:
     add_question: str = input('Add something to do \n')
@@ -55,12 +55,13 @@ def edit_task() -> None:
     TO_DO_LIST.insert(edit_question, edited_task)
 
 def display_to_dos() -> None:
+    print('\n')
     for num in range(len(TO_DO_LIST)):
         print(f'{num + 1}: {TO_DO_LIST[num]}')
 
 
 def get_marching_orders() -> str:
-    question: str = input('What would you like to do? \n')
+    question: str = input('\nWhat would you like to do? \n')
     return question
 
 
@@ -89,6 +90,9 @@ def main() -> None:
 
         elif question == 'edit':
             edit_task()
+
+        elif question == 'close':
+            exit(1)
 
         else:
             incorrect_input(question)
