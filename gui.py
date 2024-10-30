@@ -1,33 +1,50 @@
 from tkinter import Tk, ttk, StringVar, NO
+import brain as brain
 
-LIST = []
 
 # TODO - Rewrite this function, currently allows the use of the enter key to add items to list
 def func(event):
     add_task(task_text_box.getvar('default_var'))
 
 
-def add_task(text) -> None:
-    LIST.append(text)
+def add_task(text: str) -> None:
+    # Add the text in the text box to the database
+    brain.append_db(text)
 
+    # Reset the txt box to empty for the next input
     task_text_box.setvar('default_var', '' )
+
     update_tree_box()
 
 
 def delete_task() -> None:
-    x = tree_box.selection()
-    w = tree_box.index(x)
-    LIST.pop(w)
+    # Get a hold of the index of the users selected item to delete
+    get_selected_item = tree_box.selection()
+    index_of_selected = tree_box.index(get_selected_item[0])
+
+    # Read in all the items in the to do list database
+    lines = brain.read_db()
+    # Delete the line that matches the index obtained above
+    lines.pop(index_of_selected)
+    # Rewrite the list to the database without the deleted item
+    brain.write_db(lines)
+
     update_tree_box()
+
 
 def update_tree_box() -> None:
 
-    x = tree_box.get_children()
-    for item in x:
+    # Get all the items displayed in the tree box into a list
+    box_items = tree_box.get_children()
+    # Iterate through each item in the list and delete them from tree box view
+    for item in box_items:
         tree_box.delete(item)
 
-    for entry in range(len(LIST)):
-        tree_box.insert('', 'end', values=(entry+1, LIST[entry]))
+    # Get all the lines written in the database
+    lines = brain.read_db()
+    # Iterate through each line and add it to the tree box view
+    for entry in range(len(lines)):
+        tree_box.insert('', 'end', values=(entry+1, lines[entry]))
 
 
 root = Tk()
@@ -48,7 +65,7 @@ tree_box.configure(yscrollcommand=scrollbar.set)
 tree_box.grid(row=0, column=0, sticky='NSEW')
 scrollbar.grid(row=0, column=1, sticky='NSE')
 
-# Controls the heading names for the columns as well as all varibles concerning the columns
+# Controls the heading names for the columns as well as all variables concerning the columns
 tree_box.heading('1', text='#')
 tree_box.column('1', minwidth=0, width=20, stretch=NO)
 tree_box.heading('2', text='Task')
@@ -73,8 +90,6 @@ root.bind('<Return>', func)
 # edit_button = ttk.Button(button_frame, text='Edit')
 # edit_button.grid(row=0, column=1, sticky='NSEW')
 
-
-
 # completed_button = ttk.Button(button_frame, text='Completed')
 # completed_button.grid(row=0, column=3, sticky='NSEW')
 
@@ -90,4 +105,5 @@ root.grid_rowconfigure(0, weight=10)
 root.grid_rowconfigure(1, weight=1)
 
 # Main run
+update_tree_box()
 root.mainloop()
