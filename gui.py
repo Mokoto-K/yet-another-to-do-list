@@ -58,7 +58,7 @@ button_frame = ttk.Frame(root, padding=5)
 button_frame.grid(row=1, column=0, sticky='NSEW')
 
 # Creates the list area to hold the list of to dos and adds a scrollbar
-tree_box = ttk.Treeview(list_frame, columns=('1', '2'), show='headings', selectmode='browse', height=25)
+tree_box = ttk.Treeview(list_frame, columns=('1', '2'), show='headings', selectmode='browse', height=10)
 scrollbar = ttk.Scrollbar(list_frame, orient='vertical', command=tree_box.yview)
 tree_box.configure(yscrollcommand=scrollbar.set)
 
@@ -69,7 +69,7 @@ scrollbar.grid(row=0, column=1, sticky='NSE')
 tree_box.heading('1', text='#')
 tree_box.column('1', minwidth=0, width=20, stretch=NO)
 tree_box.heading('2', text='Task')
-tree_box.column('2', minwidth=0, width=600, stretch=NO)
+tree_box.column('2', minwidth=0, width=550, stretch=NO)
 
 # Adding a task to the list
 default_text = StringVar(None, '', 'default_var')
@@ -77,6 +77,7 @@ default_text = StringVar(None, '', 'default_var')
 # Where you type in  new to do
 task_text_box = ttk.Entry(button_frame, textvariable = default_text)
 task_text_box.grid(row=0, column=0, sticky='NSEW')
+task_text_box.focus_set()
 
 add_button = ttk.Button(button_frame, text='Add', command=lambda :add_task(task_text_box.getvar('default_var')))
 add_button.grid(row=0, column=1, sticky='NSEW')
