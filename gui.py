@@ -1,5 +1,7 @@
 from tkinter import Tk, ttk, StringVar, NO
-import brain as brain
+import database as db
+
+# ------------ FUNCTIONALITY --------------
 
 
 # TODO - Rewrite this function, currently allows the use of the enter key to add items to list
@@ -9,7 +11,7 @@ def func(event):
 
 def add_task(text: str) -> None:
     # Add the text in the text box to the database
-    brain.append_db(text)
+    db.append_to_db(text)
 
     # Reset the txt box to empty for the next input
     task_text_box.setvar('default_var', '' )
@@ -19,34 +21,39 @@ def add_task(text: str) -> None:
 
 def delete_task() -> None:
     # Get a hold of the index of the users selected item to delete
-    get_selected_item = tree_box.selection()
-    index_of_selected = tree_box.index(get_selected_item[0])
+    get_selected_item: tuple = tree_box.selection()
+
+    # Check to make sure there is a selected list item to delete or the list isn't empty
+    if len(get_selected_item) == 0:
+        return
+
+    index_of_selected: int = tree_box.index(get_selected_item[0])
 
     # Read in all the items in the to do list database
-    lines = brain.read_db()
+    lines: list = db.read_from_db()
     # Delete the line that matches the index obtained above
     lines.pop(index_of_selected)
     # Rewrite the list to the database without the deleted item
-    brain.write_db(lines)
+    db.write_to_db(lines)
 
     update_tree_box()
 
 
 def update_tree_box() -> None:
-
     # Get all the items displayed in the tree box into a list
-    box_items = tree_box.get_children()
+    box_items: tuple = tree_box.get_children()
     # Iterate through each item in the list and delete them from tree box view
     for item in box_items:
         tree_box.delete(item)
 
     # Get all the lines written in the database
-    lines = brain.read_db()
+    lines: list = db.read_from_db()
     # Iterate through each line and add it to the tree box view
     for entry in range(len(lines)):
         tree_box.insert('', 'end', values=(entry+1, lines[entry]))
 
 
+# --------------- GUI BELOW ---------------
 root = Tk()
 root.title('TO-DO LIST')
 # root.geometry('800x500')
