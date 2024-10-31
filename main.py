@@ -1,8 +1,7 @@
-import gui
+import gui as program
 
 def main() -> None:
-    pass
-
+    program.root.mainloop()
 
 
 if __name__ == '__main__':

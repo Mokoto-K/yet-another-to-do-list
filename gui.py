@@ -1,17 +1,24 @@
 from tkinter import Tk, ttk, StringVar, NO
 import database as db
 
+# TODO - Add functionality to be able to edit a to do
+# TODO - Add a completed list/tab where you can see to dos you have marked as finished
+# TODO - Add timestamps so there can be a column for date or time that a to do was set and or completed
+# TODO - Add an SQLite database instead of a text file
+
+
 # ------------ FUNCTIONALITY --------------
-
-
-# TODO - Rewrite this function, currently allows the use of the enter key to add items to list
 def func(event):
     add_task(task_text_box.getvar('default_var'))
 
 
-def add_task(text: str) -> None:
+def add_task(todo: str) -> None:
+    # Add a check for an empty to-do being added
+    if todo == '':
+        return
+
     # Add the text in the text box to the database
-    db.append_to_db(text)
+    db.append_to_db(todo)
 
     # Reset the txt box to empty for the next input
     task_text_box.setvar('default_var', '' )
@@ -52,6 +59,7 @@ def update_tree_box() -> None:
     for entry in range(len(lines)):
         tree_box.insert('', 'end', values=(entry+1, lines[entry]))
 
+    task_text_box.focus_set()
 
 # --------------- GUI BELOW ---------------
 root = Tk()
@@ -84,7 +92,7 @@ default_text = StringVar(None, '', 'default_var')
 # Where you type in  new to do
 task_text_box = ttk.Entry(button_frame, textvariable = default_text)
 task_text_box.grid(row=0, column=0, sticky='NSEW')
-task_text_box.focus_set()
+
 
 add_button = ttk.Button(button_frame, text='Add', command=lambda :add_task(task_text_box.getvar('default_var')))
 add_button.grid(row=0, column=1, sticky='NSEW')
@@ -114,4 +122,3 @@ root.grid_rowconfigure(1, weight=1)
 
 # Main run
 update_tree_box()
-root.mainloop()
