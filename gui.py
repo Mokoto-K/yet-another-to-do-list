@@ -46,6 +46,44 @@ def delete_task() -> None:
     update_tree_box()
 
 
+def move_down() -> None:
+    # Get a hold of the index of the users selected item to delete
+    get_selected_item: tuple = tree_box.selection()
+
+    # Check to make sure there is a selected list item to delete or the list isn't empty
+    if len(get_selected_item) == 0:
+        return
+
+    index_of_selected: int = tree_box.index(get_selected_item[0])
+
+    lines: list = db.read_from_db()
+    item = lines.pop(index_of_selected)
+    lines.insert(index_of_selected+1, item)
+
+    db.write_to_db(lines)
+
+    update_tree_box()
+
+
+def move_up() -> None:
+    # Get a hold of the index of the users selected item to delete
+    get_selected_item: tuple = tree_box.selection()
+
+    # Check to make sure there is a selected list item to delete or the list isn't empty
+    if len(get_selected_item) == 0:
+        return
+
+    index_of_selected: int = tree_box.index(get_selected_item[0])
+
+    lines: list = db.read_from_db()
+    item = lines.pop(index_of_selected)
+    lines.insert(index_of_selected - 1, item)
+
+    db.write_to_db(lines)
+
+    update_tree_box()
+
+
 def update_tree_box() -> None:
     # Get all the items displayed in the tree box into a list
     box_items: tuple = tree_box.get_children()
@@ -84,7 +122,7 @@ scrollbar.grid(row=0, column=1, sticky='NSE')
 tree_box.heading('1', text='#')
 tree_box.column('1', minwidth=0, width=20, stretch=NO)
 tree_box.heading('2', text='Task')
-tree_box.column('2', minwidth=0, width=550, stretch=NO)
+tree_box.column('2', minwidth=0, width=650, stretch=NO)
 
 # Adding a task to the list
 default_text = StringVar(None, '', 'default_var')
@@ -93,12 +131,17 @@ default_text = StringVar(None, '', 'default_var')
 task_text_box = ttk.Entry(button_frame, textvariable = default_text)
 task_text_box.grid(row=0, column=0, sticky='NSEW')
 
-
 add_button = ttk.Button(button_frame, text='Add', command=lambda :add_task(task_text_box.getvar('default_var')))
 add_button.grid(row=0, column=1, sticky='NSEW')
 
 delete_button = ttk.Button(button_frame, text='Delete', command=delete_task)
 delete_button.grid(row=0, column=2, sticky='NSEW')
+
+move_up_button = ttk.Button(button_frame, text="Up", command=move_up)
+move_up_button.grid(row=0, column=3, sticky='NSEW')
+
+move_down_button = ttk.Button(button_frame, text="Down", command=move_down)
+move_down_button.grid(row=0, column=4, sticky='NSEW')
 
 # Enables the ability to add items with the enter key
 root.bind('<Return>', func)
@@ -116,6 +159,8 @@ list_frame.grid_columnconfigure(1, weight=1)
 button_frame.grid_columnconfigure(0, weight=10)
 button_frame.grid_columnconfigure(1, weight=1)
 button_frame.grid_columnconfigure(2, weight=1)
+button_frame.grid_columnconfigure(3, weight=1)
+button_frame.grid_columnconfigure(4, weight=1)
 
 root.grid_rowconfigure(0, weight=10)
 root.grid_rowconfigure(1, weight=1)
