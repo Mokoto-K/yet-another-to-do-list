@@ -1,9 +1,8 @@
 from tkinter import Tk, ttk, StringVar, NO
 import database as db
-
+import datetime as dt
 # TODO - Add functionality to be able to edit a to do
 # TODO - Add a completed list/tab where you can see to dos you have marked as finished
-# TODO - Add timestamps so there can be a column for date or time that a to do was set and or completed
 # TODO - Add an SQLite database instead of a text file
 
 
@@ -12,13 +11,17 @@ def func(event):
     add_task(task_text_box.getvar('default_var'))
 
 
+def get_time() -> str:
+   return "_" + dt.datetime.now().strftime("%d/%m/%y - %H:%M")
+
+
 def add_task(todo: str) -> None:
     # Add a check for an empty to-do being added
     if todo == '':
         return
 
     # Add the text in the text box to the database
-    db.append_to_db(todo)
+    db.append_to_db(todo+get_time())
 
     # Reset the txt box to empty for the next input
     task_text_box.setvar('default_var', '' )
@@ -126,7 +129,7 @@ def update_tree_box() -> None:
     lines: list = db.read_from_db()
     # Iterate through each line and add it to the tree box view
     for entry in range(len(lines)):
-        tree_box.insert('', 'end', values=(entry+1, lines[entry]))
+        tree_box.insert('', 'end', values=(entry+1, lines[entry].split('_')[0], lines[entry].split('_')[1]), )
 
     task_text_box.focus_set()
 
@@ -142,7 +145,7 @@ button_frame = ttk.Frame(root, padding=5)
 button_frame.grid(row=1, column=0, sticky='NSEW')
 
 # Creates the list area to hold the list of to dos and adds a scrollbar
-tree_box = ttk.Treeview(list_frame, columns=('1', '2'), show='headings', selectmode='browse', height=10)
+tree_box = ttk.Treeview(list_frame, columns=('1', '2', '3'), show='headings', selectmode='browse', height=10)
 scrollbar = ttk.Scrollbar(list_frame, orient='vertical', command=tree_box.yview)
 tree_box.configure(yscrollcommand=scrollbar.set)
 
@@ -154,6 +157,9 @@ tree_box.heading('1', text='#')
 tree_box.column('1', minwidth=0, width=20, stretch=NO)
 tree_box.heading('2', text='Task')
 tree_box.column('2', minwidth=0, width=650, stretch=NO)
+tree_box.heading('3', text='Date')
+tree_box.column('3', minwidth=0, width=95, stretch=NO)
+
 
 # Adding a task to the list
 default_text = StringVar(None, '', 'default_var')
