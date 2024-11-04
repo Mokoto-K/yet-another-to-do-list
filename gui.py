@@ -97,6 +97,10 @@ def move_up() -> None:
     lines: list = db.read_from_db()
     item = lines.pop(index_of_selected)
 
+    # if the index of the selected item is the first in the box
+    # then we want to make it appear as the last on the list so
+    # the user can cycle from the top to the bottom like the down
+    # button, but in reverse for better user experience.
     if index_of_selected == 0:
         lines.insert(len(lines)+1, item)
     else:
