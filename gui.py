@@ -47,22 +47,40 @@ def delete_task() -> None:
 
 
 def move_down() -> None:
-    # Get a hold of the index of the users selected item to delete
+    # Get a hold of the highlight item
     get_selected_item: tuple = tree_box.selection()
 
     # Check to make sure there is a selected list item to delete or the list isn't empty
     if len(get_selected_item) == 0:
         return
 
+    # Get the index number of the selected item
     index_of_selected: int = tree_box.index(get_selected_item[0])
 
     lines: list = db.read_from_db()
     item = lines.pop(index_of_selected)
-    lines.insert(index_of_selected+1, item)
+
+    # If the length of the to do list is equal to the index of the selected item
+    # Since we popped the item out, this should only be the case if the item was
+    # last on the list as the off by one error. Therefore, put it to the front of
+    # the list so that the users can move it to the top using down from the bottom
+    if index_of_selected == len(lines):
+        lines.insert(0, item)
+    else:
+        lines.insert(index_of_selected+1, item)
 
     db.write_to_db(lines)
 
     update_tree_box()
+
+    # Selects the option the user initially selected before moving the item, allows for quick shifting of items in the
+    # list. Same as comparing index to list size above, except now we have added
+    # a new item to the list therefore the list is one size bigger so the index needs
+    # to be incremented
+    if index_of_selected + 1 == len(lines):
+        tree_box.selection_set(tree_box.get_children()[0])
+    else:
+        tree_box.selection_set(tree_box.get_children()[index_of_selected + 1])
 
 
 def move_up() -> None:
@@ -75,13 +93,22 @@ def move_up() -> None:
 
     index_of_selected: int = tree_box.index(get_selected_item[0])
 
+
     lines: list = db.read_from_db()
     item = lines.pop(index_of_selected)
-    lines.insert(index_of_selected - 1, item)
+
+    if index_of_selected == 0:
+        lines.insert(len(lines)+1, item)
+    else:
+        lines.insert(index_of_selected - 1, item)
 
     db.write_to_db(lines)
 
     update_tree_box()
+
+    # Selects the option the user initially selected before moving the item, allows for quick shifting of items in the
+    # list.
+    tree_box.selection_set(tree_box.get_children()[index_of_selected-1])
 
 
 def update_tree_box() -> None:
