@@ -1,4 +1,6 @@
+import os
 DB_FILE = 'database.txt'
+
 
 def read_from_db() -> list:
     """Read in all lines from the default database file"""
@@ -20,3 +22,7 @@ def append_to_db(todo: str) ->None:
     """
     with open(DB_FILE, 'a') as td_list:
         td_list.write(todo + '\n')
+
+
+if not os.path.exists(DB_FILE):
+    append_to_db("Welcome to your todos_ ")

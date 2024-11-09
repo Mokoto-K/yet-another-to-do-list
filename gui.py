@@ -145,7 +145,7 @@ button_frame = ttk.Frame(root, padding=5)
 button_frame.grid(row=1, column=0, sticky='NSEW')
 
 # Creates the list area to hold the list of to dos and adds a scrollbar
-tree_box = ttk.Treeview(list_frame, columns=('1', '2', '3'), show='headings', selectmode='browse', height=10)
+tree_box = ttk.Treeview(list_frame, columns=('1', '2', '3'), show='headings', selectmode='browse', height=20)
 scrollbar = ttk.Scrollbar(list_frame, orient='vertical', command=tree_box.yview)
 tree_box.configure(yscrollcommand=scrollbar.set)
 
@@ -154,11 +154,11 @@ scrollbar.grid(row=0, column=1, sticky='NSE')
 
 # Controls the heading names for the columns as well as all variables concerning the columns
 tree_box.heading('1', text='#')
-tree_box.column('1', minwidth=0, width=20, stretch=NO)
+tree_box.column('1', minwidth=0, width=25, stretch=NO)
 tree_box.heading('2', text='Task')
-tree_box.column('2', minwidth=0, width=650, stretch=NO)
+tree_box.column('2', minwidth=0, width=550, stretch=NO)
 tree_box.heading('3', text='Date')
-tree_box.column('3', minwidth=0, width=95, stretch=NO)
+tree_box.column('3', minwidth=0, width=115, stretch=NO)
 
 
 # Adding a task to the list

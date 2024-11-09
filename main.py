@@ -1,5 +1,6 @@
 import gui as program
 
+
 def main() -> None:
     program.root.mainloop()
 
