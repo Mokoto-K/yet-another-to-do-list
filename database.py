@@ -25,4 +25,4 @@ def append_to_db(todo: str) ->None:
 
 
 if not os.path.exists(DB_FILE):
-    append_to_db("Welcome to your todos_ ")
+    append_to_db("Welcome to your todos^*# ")

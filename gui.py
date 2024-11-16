@@ -1,18 +1,33 @@
 from tkinter import Tk, ttk, StringVar, NO
 import database as db
 import datetime as dt
-# TODO - Add functionality to be able to edit a to do
-# TODO - Add a completed list/tab where you can see to dos you have marked as finished
+# TODO - Consider simplifying edits, UX is very poor and not intuitive
 # TODO - Add an SQLite database instead of a text file
+DELIMTER = '^*#'
 
 
 # ------------ FUNCTIONALITY --------------
-def func(event):
+def enter_button_function(event):
     add_task(task_text_box.getvar('default_var'))
 
 
+def double_click_function() -> None:
+    # Check to make sure an item in the list was double-clicked
+    if len(tree_box.selection()) == 0:
+        return
+
+    # Get the double-clicked item and it's index in the treebox
+    selected_item: tuple = tree_box.selection()
+    items_index: int = tree_box.index(selected_item[0])
+
+    # Get the corresponding item from the database and place it in the textbox
+    database_item: list = db.read_from_db()
+    clean_item: str = database_item[items_index].split(DELIMTER)[0]
+    task_text_box.setvar('default_var', clean_item)
+
+
 def get_time() -> str:
-   return "_" + dt.datetime.now().strftime("%d/%m/%y - %H:%M")
+   return DELIMTER + dt.datetime.now().strftime("%d/%m/%y - %H:%M")
 
 
 def add_task(todo: str) -> None:
@@ -46,6 +61,28 @@ def delete_task() -> None:
     # Rewrite the list to the database without the deleted item
     db.write_to_db(lines)
 
+    update_tree_box()
+
+
+def edit_task(todo: str) -> None:
+    # Get the selected item from the box
+    selected_item: tuple = tree_box.selection()
+
+    # Check to make sure an item has been selected
+    if len(selected_item) == 0:
+        return
+
+    if task_text_box.getvar('default_var') == '':
+        return
+
+    item_index: int = tree_box.index(selected_item[0])
+
+    database_file: list = db.read_from_db()
+    database_file.insert(item_index, task_text_box.getvar('default_var')+get_time()+"\n")
+    database_file.pop(item_index+1)
+
+    db.write_to_db(database_file)
+    tree_box.setvar('default_var', '')
     update_tree_box()
 
 
@@ -129,7 +166,7 @@ def update_tree_box() -> None:
     lines: list = db.read_from_db()
     # Iterate through each line and add it to the tree box view
     for entry in range(len(lines)):
-        tree_box.insert('', 'end', values=(entry+1, lines[entry].split('_')[0], lines[entry].split('_')[1]), )
+        tree_box.insert('', 'end', values=(entry+1, lines[entry].split(DELIMTER)[0], lines[entry].split(DELIMTER)[1]), )
 
     task_text_box.focus_set()
 
@@ -166,25 +203,26 @@ default_text = StringVar(None, '', 'default_var')
 
 # Where you type in  new to do
 task_text_box = ttk.Entry(button_frame, textvariable = default_text)
-task_text_box.grid(row=0, column=0, sticky='NSEW')
+task_text_box.grid(row=0, column=0, columnspan=5, sticky='NSEW')
 
 add_button = ttk.Button(button_frame, text='Add', command=lambda :add_task(task_text_box.getvar('default_var')))
-add_button.grid(row=0, column=1, sticky='NSEW')
+add_button.grid(row=1, column=0, sticky='NSEW')
 
 delete_button = ttk.Button(button_frame, text='Delete', command=delete_task)
-delete_button.grid(row=0, column=2, sticky='NSEW')
+delete_button.grid(row=1, column=1, sticky='NSEW')
+
+edit_button = ttk.Button(button_frame, text='Edit', command=lambda:edit_task(task_text_box.getvar('default_var')))
+edit_button.grid(row=1, column=2, sticky='NSEW')
 
 move_up_button = ttk.Button(button_frame, text="Up", command=move_up)
-move_up_button.grid(row=0, column=3, sticky='NSEW')
+move_up_button.grid(row=1, column=3, sticky='NSEW')
 
 move_down_button = ttk.Button(button_frame, text="Down", command=move_down)
-move_down_button.grid(row=0, column=4, sticky='NSEW')
+move_down_button.grid(row=1, column=4, sticky='NSEW')
 
 # Enables the ability to add items with the enter key
-root.bind('<Return>', func)
-
-# edit_button = ttk.Button(button_frame, text='Edit')
-# edit_button.grid(row=0, column=1, sticky='NSEW')
+root.bind('<Return>', enter_button_function)
+root.bind('<Double-Button-1>', double_click_function)
 
 # completed_button = ttk.Button(button_frame, text='Completed')
 # completed_button.grid(row=0, column=3, sticky='NSEW')
@@ -193,14 +231,17 @@ root.bind('<Return>', func)
 root.grid_columnconfigure(0, weight=1)
 list_frame.grid_columnconfigure(0, weight=1000)
 list_frame.grid_columnconfigure(1, weight=1)
-button_frame.grid_columnconfigure(0, weight=10)
+button_frame.grid_columnconfigure(0, weight=1)
 button_frame.grid_columnconfigure(1, weight=1)
 button_frame.grid_columnconfigure(2, weight=1)
 button_frame.grid_columnconfigure(3, weight=1)
 button_frame.grid_columnconfigure(4, weight=1)
+button_frame.grid_columnconfigure(5, weight=1)
 
 root.grid_rowconfigure(0, weight=10)
 root.grid_rowconfigure(1, weight=1)
+list_frame.grid_rowconfigure(0, weight=1)
+list_frame.grid_rowconfigure(1, weight=1)
 
 # Main run
 update_tree_box()
