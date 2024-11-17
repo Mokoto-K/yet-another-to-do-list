@@ -11,10 +11,11 @@ def enter_button_function(event):
     add_task(task_text_box.getvar('default_var'))
 
 
-def double_click_function() -> None:
+def double_click_function(event) -> None:
     # Check to make sure an item in the list was double-clicked
     if len(tree_box.selection()) == 0:
-        return
+       return
+
 
     # Get the double-clicked item and it's index in the treebox
     selected_item: tuple = tree_box.selection()
