@@ -91,17 +91,17 @@ def display_to_dos() -> None:
 
 def get_marching_orders() -> tuple:
     question: str = input('\nWhat would you like to do? \n')
+    answer = None
 
     if len(question) > 3 and question[:3] == "add":
         command = "add"
         todo = question[4:]
         return (command, todo)
-    elif question == "delete" or question == 'edit':
+    elif question != "close": 
         command = question.split(' ')[0]
         answer = int(question.split(' ')[1]) 
     else:
         command = question.split(' ')[0]
-        answer = None
     return (command, answer) 
 
 
