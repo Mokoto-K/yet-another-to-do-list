@@ -81,7 +81,8 @@ def edit_task(answer) -> None:
 
 def display_to_dos() -> None:
 
-    #print('\n')
+    print('\n')
+    print('------------------------------------------------------------')
     to_dos = database.read_from_db()
     #for i in to_dos:
     #    print(i)
@@ -119,8 +120,9 @@ def main() -> None:
 
     while True:
         clear_terminal() 
-        display_to_dos()
         get_commands()
+        display_to_dos()
+        
         command, answer = get_marching_orders()
 
         # Lists all commands for the user
