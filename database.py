@@ -13,7 +13,7 @@ def write_to_db(lines: list) -> None:
     """Write the passed in list to a database file"""
     with open(DB_FILE, 'w') as file:
         file.writelines(lines)
-
+        
 
 def append_to_db(todo: str) ->None:
     """
@@ -22,6 +22,7 @@ def append_to_db(todo: str) ->None:
     """
     with open(DB_FILE, 'a') as td_list:
         td_list.write(todo + '\n')
+
 
 
 if not os.path.exists(DB_FILE):
