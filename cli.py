@@ -87,7 +87,11 @@ def display_to_dos() -> None:
     #for i in to_dos:
     #    print(i)
     for num in range(len(to_dos)):
-        print(f'{num + 1}: {to_dos[num]}')
+
+        # This is an absolutely lazy way to format the to do, fix this shit up!
+        to_do = to_dos[num].split("^*#")[0]+"\n"
+        date = to_dos[num].split("^*#")[1].split(" ")[0]+" - "
+        print(f'{num + 1 :3d}: {date + to_do}')
     
 
 def get_marching_orders() -> tuple:
@@ -110,11 +114,13 @@ def incorrect_input(question: str) -> None:
     print(f'"{question}" is not a valid command, possible commands are:')
     get_commands()
 
+
 def clear_terminal():
     if platform == "Windows":
         os.system('cls')
     else:
         os.system('clear')
+
 
 def main() -> None:
 
