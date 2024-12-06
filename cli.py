@@ -40,6 +40,12 @@ def delete_task(answer) -> None:
     deleted_task: bool = False
     db = database.read_from_db()
     # Control input
+
+    # This check is if someone enters delete but doesnt supply an int for a todo
+    # to delete from the list.
+    if answer == None:
+        deleted_task = True
+
     while not deleted_task:
         if len(db) < 1:
             print('There are no tasks to remove')
@@ -69,11 +75,21 @@ def delete_task(answer) -> None:
 
 
 def edit_task(answer) -> None:
+    # This check is if someone enters the edit command but doesnt supply an int
+    # for a todo in the list to edit
+    if answer == None:
+        return
     # edit_question: int = int(input('Which task number would you like to edit')) - 1
     answer = answer - 1
+    # Wipe it from the db
     db = database.read_from_db()
-    db.pop(answer)
 
+    # Save the todo in text for to show the user what to edit
+    todo_to_edit = db[answer].split("^*#")[0]+"\n"
+    
+    db.pop(answer)
+    
+    print("\n"+"You want to edit: "+todo_to_edit)
     edited_task: str = input('What would you like to edit this to do too?\n')
 
     db.insert(answer, edited_task+get_time()+'\n')
@@ -97,16 +113,33 @@ def display_to_dos() -> None:
 def get_marching_orders() -> tuple:
     question: str = input('\nWhat would you like to do? \n')
     answer = None
-
+    
+    # You have once again found the ugliest most inefficent way of doing something
+    # House of mother fucking cards, change this shit asap.
     if len(question) > 3 and question[:3] == "add":
         command = "add"
         todo = question[4:]
         return (command, todo)
-    elif question != "close": 
+    elif question[:6] == "delete": 
         command = question.split(' ')[0]
-        answer = int(question.split(' ')[1]) 
+        try:
+            answer = int(question.split(' ')[1]) 
+        except (ValueError):
+            print("Enter a valid number to delete")
+            answer = None
+    elif question[:4] == "edit": 
+        command = question.split(' ')[0]
+        try:
+            answer = int(question.split(' ')[1]) 
+        except (ValueError):
+            print("Enter a valid number to Edit")
+            answer = None
+    elif question[:5] == "close":
+        command = question.split(' ')[0]
     else:
-        command = question.split(' ')[0]
+        command = None
+
+    #print(command, answer)
     return (command, answer) 
 
 
@@ -147,6 +180,7 @@ def main() -> None:
             edit_task(answer)
 
         elif command == 'close':
+            clear_terminal()
             exit(1)
 
         else:
